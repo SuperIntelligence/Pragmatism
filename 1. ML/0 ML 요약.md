@@ -114,6 +114,26 @@ Xmm_train, Xmm_test, y_train, y_test = train_test_split(Xmm, y, stratify=y)
 model = SVC().fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
 ```
 ##### 차원축소
+
 #### encoding(인코딩)
 ##### one-hot encoding
+안녕
 #### pickle 사용법
+##### 짠지담그기
+```python
+import pickle
+
+with open('trained_models.pkl', 'wb') as fp:
+  pickle.dump({'model1': model1, 'model2': model2}, fp) # fit()된 친구들
+```
+걍 아무 오브젝트 묶어서 구조체 만들어서 파일로 저장하는거다. .pkl파일 옮기면된다.
+##### 짠지꺼내먹기
+```python
+import pickle
+
+with open('trained_models.pkl', 'rb') as fp:
+  models = pickle.load(fp)
+
+models['model1'].score(X_test, y_test) # 요렇게 갖다쓰면된다.
+```
+끝.
