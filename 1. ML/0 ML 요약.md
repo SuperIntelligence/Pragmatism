@@ -3,7 +3,7 @@
 * 환경구성
 * 파이썬 기본
 * numpy, pandas
-## [2일차](./Day 2/Day 2.md)
+## [2일차]("./Day 2/Day 2.md")
 * MCP 뉴런
 * 퍼셉트론
 * scikit-learn
