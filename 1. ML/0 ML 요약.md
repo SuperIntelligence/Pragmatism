@@ -7,15 +7,14 @@
 * MCP 뉴런
 * 퍼셉트론
 * scikit-learn
-* k-NN
-* linear model (regressor)
-* linear model (classifier)
+* kNN
 ## [3일차](./Day%203/Day%203.md)
-* decision tree
-* decision tree (앙상블)
-* SVM
-* neural network
+* Linear Model
+* Decision Tree
 ## [4일차](./Day%204/Day%204.md)
+* Decision Tree (Ensemble)
+* SVM
+* 
 
 결국 진도대로 나가지도 못했기 때문에 일단 한것만 써놓겠습니다.
 
@@ -87,3 +86,34 @@ model = KNeighborsRegressor(n_neighbors=이웃수)
 model.fit(X_train, y_train)
 print(model.score(X_train, y_train), model.score(X_test, y_test))
 ```
+## 3일차
+### Linear Model
+### Decision Tree
+## 4일차
+### Decision Tree (Ensemble)
+### SVM
+```python
+from sklearn.svm import SVC
+
+model = SVC().fit(X_train, y_train)
+```
+결과 잘 안나올거다. 왜냐? SVM류는 특별히 X를 **전처리**해주어야한다(특징값들의 범위에 민감하다나). <p />
+보통 MinMaxScaler로 모든 데이터를 0~1사이의 값으로 변환해준다.
+### 기타
+#### preprocessing(전처리)
+##### MinMaxScaler
+```python
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+Xmm = scaler.fit_transform(X)
+print(DataFrame(Xmm).head(5)) # 확인. 요렇게 바뀐다.
+
+Xmm_train, Xmm_test, y_train, y_test = train_test_split(Xmm, y, stratify=y)
+
+model = SVC().fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
+```
+##### 차원축소
+#### encoding(인코딩)
+##### one-hot encoding
+#### pickle 사용법
