@@ -10,7 +10,7 @@
 * k-NN
 * linear model (regressor)
 * linear model (classifier)
-## [3일차](Day-3/Day-3.md)
+## [3일차](./Day_3/Day_3.md)
 * decision tree
 * decision tree (앙상블)
 * SVM
