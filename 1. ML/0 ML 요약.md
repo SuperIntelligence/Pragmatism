@@ -1,20 +1,21 @@
-# 학습일정
-## 1일차
+# 학습일정 및 필기 
+## [1일차](Day 1/Day 1.md)
 * 환경구성
 * 파이썬 기본
 * numpy, pandas
-## 2일차
+## [2일차](Day 2/Day 2.md)
 * MCP 뉴런
 * 퍼셉트론
 * scikit-learn
 * k-NN
 * linear model (regressor)
 * linear model (classifier)
-## 3일차
+## [3일차](Day 3/Day 3.md)
 * decision tree
 * decision tree (앙상블)
 * SVM
 * neural network
+## [4일차](Day 4/Day 4.md)
 
 결국 진도대로 나가지도 못했기 때문에 일단 한것만 써놓겠습니다.
 
