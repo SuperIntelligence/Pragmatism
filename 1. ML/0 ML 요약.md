@@ -45,6 +45,46 @@ matplotlib 간단한 사용법, 스타일 설정(색상, 선스타일)
 pd.read_csv(): csv파일을 pandas에서 제공하는 dataframe형으로 변환
 이후 pandas에서 제공하는 각종 메소드들 이용가능.
 (보통 그냥 .head(5)로 확인만 하고 y, X를 .values() 이용해서 ndarray로 삽입)
+### 정리
+고로 일반적으로 데이터는 다음과 같이 처리한다.
+```python
+import numpy as np
+import pandas as pd
+
+data = pd.read_csv('data/wdbc.data')
+print(data.head(5), data.shape) # 한번 확인
+
+y = data['class']
+X = data.values[:,1:].astype('float32')
+```
 
 ## 2일차
-다음기회에^^ 
+### scikit-learn
+1일차의 X, y에 이어서. 학습데이터와 검증데이터를 3:1 비율로 나눠준다.
+```python
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
+```
+### kNN
+#### Classifier
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+이웃수 = 1 # 반복문으로 이웃수를 바꿔가며 score가 괜찮게 나오는 모델을 고르면 된다.
+model = KNeighborsClassifier(n_neighbors=이웃수)
+
+model.fit(X_train, y_train)
+print(model.score(X_train, y_train), model.score(X_test, y_test))
+```
+score()는 얼마나 맞췄는지를 1점만점으로 보여준다.
+#### Regressor
+```python
+from sklearn.neighbor import KNeighborsRegressor
+
+이웃수 = 1 # 반복문으로 이웃수를 바꿔가며 score가 괜찮게 나오는 모델을 고르면 된다.
+model = KNeighborsRegressor(n_neighbors=이웃수)
+
+model.fit(X_train, y_train)
+print(model.score(X_train, y_train), model.score(X_test, y_test))
+```
