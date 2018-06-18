@@ -1,5 +1,5 @@
-# Pragmatism
-Pragmatism
+# Introduction
+파이썬을 활용한 머신러닝, 딥러닝, 강화학습, GAN
 
 # 계획 및 링크
 * [5월 5주 : 파이썬 RL + GAN](./3.%20RL/0%20RL%20요약.md)
