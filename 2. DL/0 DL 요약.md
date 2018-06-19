@@ -189,4 +189,53 @@ class Layer:
         y = self.activation(z)
         return y
 ```
+레이어를 만들었다. 순전파를 만들어보자
+```python
+class FeedForwardNet:
+    def __init__(self):
+        self.layers = []
+        
+    def add(self, layer):
+        self.layers.append(layer)
+        
+    def predict(self, X):
+        """순전파"""
+        layer_input = X
+        for layer in self.layers:
+            layer_input = layer.output(layer_input)
+        
+        y = layer_input
+        return y
+```
+이제 이런식으로 MNIST 훈련 데이터에 맞는 신경망을 구성할 수 있다.
+```python
+layer1 = Layer(입력수=784, 출력수=50, 활성화_함수=sigmoid)
+layer2 = Layer(50, 100, sigmoid)
+layer3 = Layer(100, 10, softmax)
+```
+우선은 훈련된 가중치를 가져와 사용해보자
+```python
+import pickle
+
+with open('data/mnist_weight.pkl', 'rb') as fp:
+    params = pickle.load(fp)
+
+layer1.W = params['W1']
+layer1.b = params['b1']
+layer2.W = params['W2']
+layer2.b = params['b2']
+layer3.W = params['W3']
+layer3.b = params['b3']
+```
+그럼 한번 순전파해서 잘되나 검증을 해보자.
+```python
+model = FeedForwardNet()
+
+for layer in [layer1, layer2, layer3]:
+    model.add(layer)
+
+y_pred = np.argmax(model.predict(X_test), axis=1)
+np.mean(y_pred == y_test)
+```
+
 안녕
