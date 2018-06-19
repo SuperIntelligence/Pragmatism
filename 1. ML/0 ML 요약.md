@@ -88,9 +88,20 @@ print(model.score(X_train, y_train), model.score(X_test, y_test))
 ```
 ## 3일차
 ### Linear Model
+#### Classifier
+#### Regressor
+
 ### Decision Tree
 ## 4일차
-### Decision Tree (Ensemble)
+### Random Forest
+앙상블(Ensemble) 기법은 복수 개의 모델을 수행해 학습 결과를 결합, 보다 좋은 성능을 내고자 하는 방법이다. <p />
+Random Forest는 Decision Tree 여러개로 구성된 앙상블 모델이다.
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(n_estimators=1000).fit(X_train, y_train)
+```
+하이퍼 파라미터는 n_estimators다.
 ### SVM
 ```python
 from sklearn.svm import SVC
@@ -114,7 +125,11 @@ Xmm_train, Xmm_test, y_train, y_test = train_test_split(Xmm, y, stratify=y)
 model = SVC().fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
 ```
 ##### 차원축소
+```python
+from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
 
+```
 #### encoding(인코딩)
 ##### one-hot encoding
 안녕
