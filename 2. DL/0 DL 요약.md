@@ -69,7 +69,7 @@ X = data.values[:,1:].astype('float32')
 ```python
 import numpy as np
 
-def BOX(x1, x2, w1, w2, b):
+def 뉴런(x1, x2, w1, w2, b):
     x = np.array([x1, x2])
     w = np.array([w1, w2])
     tmp = np.sum(w*x) + b
@@ -83,18 +83,80 @@ AND, NAND, OR 게이트는 구조가 같으며 단순히 가중치(weight)와 �
 ```python
 def AND(x1, x2):
     w1, w2, b = 0.5, 0.5, -0.7
-    return BOX(x1, x2, w1, w2, b)
+    return 뉴런(x1, x2, w1, w2, b)
 ```
 #### NAND 게이트
 ```python
 def NAND(x1, x2):
     w1, w2, b = -0.5, -0.5, 0.7
-    return BOX(x1, x2, w1, w2, b)
+    return 뉴런(x1, x2, w1, w2, b)
 ```
 #### OR 게이트
 ```python
 def OR(x1, x2):
     w1, w2, b = 0.5, 0.5, -0.2
-    return BOX(x1, x2, w1, w2, b)
+    return 뉴런(x1, x2, w1, w2, b)
+```
+### 퍼셉트론
+퍼셉트론은 기존의 뉴런 개념에 오차에 대한 피드백 개념이 추가된 것이다. 
+이를 통해 가중치와 편향을 스스로 학습하는것. 아래 코드는 결국 위의 뉴런에서 fit역할을 하는 퍼셉트론 class가 추가된 것이다.
+```python
+import numpy as np
+
+class 뉴런:
+    def net_input(self, X):
+        z = np.dot(X, self.w) + self.b
+        return z
+    
+    def predict(self, X):
+        z = self.net_input(X)
+        y = np.where(z > 0, 1, -1)
+        return y
+    
+class 퍼셉트론(뉴런):
+    def __init__(self, 학습률, 학습횟수):
+        self.학습률 = 학습률
+        self.학습횟수 = 학습횟수
+        
+    def fit(self, X, y):
+        # 가중치 초기화
+        self.w = np.zeros(X.shape[1])
+        self.b = 0.
+        
+        # 훈련 
+        error_history = []
+        for i in range(self.학습횟수):
+            # 각 샘플별
+            오류제곱합 = 0
+            for xi, yi in zip(X, y):
+                y_pred = self.predict(xi)
+                error = yi - y_pred
+                오류제곱합 += error ** 2
+                update = error * self.학습률
+                self.w += update * xi
+                self.b += update
+            error_history.append(오류제곱합)
+        return error_history
+```
+이걸 이용해서 iris data를 실제로 학습해 보겠다.
+```python
+import numpy as np
+import pandas as pd
+
+iris = pd.read_csv('data/iris.data', header=None)
+
+y = iris[4]
+X = iris.values[:, 0:4].astype('float32')
+
+X1 = X[:100]
+y1 = y[:100]    # y결과가 두종류만 나오게 하기위해 앞에서 100개만 쓴다(원래 세종류).
+
+y1 = np.where(y1 == 'Iris-versicolor', 1, -1)   # 1, -1로 encoding
+
+X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1)
+
+model = 퍼셉트론(학습률=0.01, 학습횟수=10)
+error_history = model.fit(X, y)     # 학습!
+plt.plot(error_history, 'go--')     # scikit-learn엔 없지만 학습 잘되는지 보려고 만듬.
 ```
 ### 
