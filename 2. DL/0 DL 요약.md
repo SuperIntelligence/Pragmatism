@@ -52,23 +52,28 @@ pd.read_csv(): csv파일을 pandas에서 제공하는 dataframe형으로 변환 
 이후 pandas에서 제공하는 각종 메소드들 이용가능. <p />
 (보통 그냥 .head(5)로 확인만 하고 y, X를 .values() 이용해서 ndarray로 삽입)
 ### 정리
-고로 일반적으로 데이터는 다음과 같이 처리한다.
+고로 일반적으로 데이터는 다음과 같이 처리한다. (train_test_split설명은 ML참조)
 ```python
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+
+%matplotlib inline
 
 data = pd.read_csv('data/wdbc.data')
 print(data.head(5), data.shape) # 한번 확인
 
 y = data['class']
 X = data.values[:,1:].astype('float32')
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
 ```
 
 ## 2일차
 ### MCP 뉴런
 ```python
-import numpy as np
-
 def 뉴런(x1, x2, w1, w2, b):
     x = np.array([x1, x2])
     w = np.array([w1, w2])
@@ -101,8 +106,6 @@ def OR(x1, x2):
 퍼셉트론은 기존의 뉴런 개념에 오차에 대한 피드백 개념이 추가된 것이다. 
 이를 통해 가중치와 편향을 스스로 학습하는것. 아래 코드는 결국 위의 뉴런에서 fit역할을 하는 퍼셉트론 class가 추가된 것이다.
 ```python
-import numpy as np
-
 class 뉴런:
     def net_input(self, X):
         z = np.dot(X, self.w) + self.b
@@ -140,9 +143,6 @@ class 퍼셉트론(뉴런):
 ```
 이걸 이용해서 iris data를 실제로 학습해 보겠다.
 ```python
-import numpy as np
-import pandas as pd
-
 iris = pd.read_csv('data/iris.data', header=None)
 
 y = iris[4]
@@ -159,4 +159,5 @@ model = 퍼셉트론(학습률=0.01, 학습횟수=10)
 error_history = model.fit(X, y)     # 학습!
 plt.plot(error_history, 'go--')     # scikit-learn엔 없지만 학습 잘되는지 보려고 만듬.
 ```
-### 
+### 신경망 
+
