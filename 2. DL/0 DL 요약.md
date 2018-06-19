@@ -35,24 +35,10 @@
 # 요약
 ## 1일차
 ### 환경구성
-필요한건 python(3.x), 'numpy, matplotlib, pandas' 3종셋트, scikit-learn (머신러닝 라이브러리임) <p />
-이정도인데, 결국 anaconda 설치하면 알아서 해결됨. (https://anaconda.org/anaconda)
+anaconda 설치하셈. (https://anaconda.org/anaconda)
 ### 파이썬 기본
-linst, range, 기본적인 함수와 반복문 사용법 등
-### numpy, matplotlib, pandas
-#### numpy
-np.array(): numpy에서 사용하는 ndarray형으로 변환 <p />
-이후 numpy에서 제공하는 각종 메소드들, <p />
-특별한 원소접근(팬시 색인, 불리언 색인) 등 사용가능
-#### matplotlib
-%matplotlib inline하면 plot만 해도 show 자동 <p />
-matplotlib 간단한 사용법, 스타일 설정(색상, 선스타일)
-#### pandas
-pd.read_csv(): csv파일을 pandas에서 제공하는 dataframe형으로 변환 <p />
-이후 pandas에서 제공하는 각종 메소드들 이용가능. <p />
-(보통 그냥 .head(5)로 확인만 하고 y, X를 .values() 이용해서 ndarray로 삽입)
-### 정리
-고로 일반적으로 데이터는 다음과 같이 처리한다. (train_test_split설명은 ML참조)
+자세한건 [ML 요약 해당부분](./../1.%20ML/0%20ML%20요약.md) 참조. <p />
+일반적으로 데이터는 다음과 같이 처리한다. (train_test_split 설명도 ML 요약 참조)
 ```python
 import numpy as np
 import pandas as pd
