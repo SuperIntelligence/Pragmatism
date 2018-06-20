@@ -207,6 +207,7 @@ import pandas as pd
 
 pd.get_dummies(y)
 ```
+Tensorflow의 딥러닝 라이브러리들은 자동 인코딩을 제공하지 않기 때문에 꼭 해주어야 한다.
 #### pickle 사용법
 ##### 짠지담그기
 ```python
