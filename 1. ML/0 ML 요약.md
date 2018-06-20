@@ -64,7 +64,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
 ```
 ### kNN
-#### Classifier
+#### Classification
 ```python
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -75,7 +75,7 @@ model.fit(X_train, y_train)
 print(model.score(X_train, y_train), model.score(X_test, y_test))
 ```
 score()는 얼마나 맞췄는지를 1점만점으로 보여준다.
-#### Regressor
+#### Regression
 ```python
 from sklearn.neighbor import KNeighborsRegressor
 
@@ -87,25 +87,81 @@ print(model.score(X_train, y_train), model.score(X_test, y_test))
 ```
 ## 3일차
 ### Linear Model
-#### Classifier
-#### Regressor
+#### Linear Regression
+```python
+from sklearn.linear_model import LinearRegression
 
+model = LinearRegression().fit(X_train, y_train)
+```
+#### Ridge Regression
+```python
+from sklearn.linear_model import Ridge
+
+model = Ridge(alpha=1.0).fit(X_train, y_train)    # hyperparameter: alpha
+```
+하이퍼 파라미터를 바꿔가며 적절한 모델을 찾는 방법은 다음과 같다.
+```python
+scores = []
+weights = []
+alpha_range = [0.01, 0.1, 1., 10., 100., 1000.]
+for alpha in alpha_range:
+    ridge = Ridge(alpha=alpha).fit(X_train, y_train)    
+    weights.append(ridge.coef_)
+    train_score = ridge.score(X_train, y_train)
+    test_score = ridge.score(X_test, y_test)
+    scores.append((train_score, test_score))
+    
+훈련평가 = pd.DataFrame(
+    scores, 
+    index=alpha_range, 
+    columns=['train', 'test'])
+훈련평가.plot(
+    logx=True, ylim=(0.3, 1.0),
+    style=['go--', 'ro--'])
+```
+과대적합과 과소적합이 발생하지 않는 적절한 값을 고르면 된다. 이 방식은 다른 모든 기계학습모델에 적용할 수 있다.
+#### Logistic Regression
+```python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression(C=1).fit(X_train, y_train)  # hyperparameter: C
+```
+C 값은 보통 [0.01, 0.1, 1., 10., 100., 1000.]
 ### Decision Tree
+#### Classification
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+model = DecisionTreeClassifier(max_depth=5).fit(X_train, y_train)  # hyperparameter: max_depth
+```
+max_depth는 보통 list(range(1, 11))
+#### Regression
+```python
+from sklearn.tree import DecisionTreeRegressor
+
+model = DecisionTreeRegressor().fit(X_train, y_train)
+```
 ## 4일차
-### Random Forest
+### Ensemble
 앙상블(Ensemble) 기법은 복수 개의 모델을 수행해 학습 결과를 결합, 보다 좋은 성능을 내고자 하는 방법이다. <p />
-Random Forest는 Decision Tree 여러개로 구성된 앙상블 모델이다.
+Random Forest와 Gradient Boosting은 Decision Tree 여러개로 구성된 앙상블 알고리즘이다.
+#### Random Forest
 ```python
 from sklearn.ensemble import RandomForestClassifier
 
-model = RandomForestClassifier(n_estimators=1000).fit(X_train, y_train)
+model = RandomForestClassifier(n_estimators=1000).fit(X_train, y_train)  # hyperparameter : n_estimators
 ```
-하이퍼 파라미터는 n_estimators다.
+#### Gradient Boosting
+```python
+from sklearn.ensemble import GradientBoostingClassifier
+
+model = GradientBoostingClassifier(n_estimators=100, max_depth=1).fit(X_train, y_train)
+```
 ### SVM
 ```python
 from sklearn.svm import SVC
 
-model = SVC().fit(X_train, y_train)
+model = SVC(C=1000).fit(X_train, y_train)   # hyperparameter: C
 ```
 결과 잘 안나올거다. 왜냐? SVM류는 특별히 X를 **전처리**해주어야한다(특징값들의 범위에 민감하다나). <p />
 보통 MinMaxScaler로 모든 데이터를 0~1사이의 값으로 변환해준다.
@@ -121,17 +177,35 @@ print(DataFrame(Xmm).head(5)) # 확인. 요렇게 바뀐다.
 
 Xmm_train, Xmm_test, y_train, y_test = train_test_split(Xmm, y, stratify=y)
 
-model = SVC().fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
+model = SVC(C=1000).fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
 ```
-##### 차원축소
+##### 차원축소, 파이프라인
 ```python
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('pca', PCA(n_components=2)),
+    ('model', LogisticRegression())
+]).fit(X_train, y_train)    # X_train을 Scaling 후, 2차원으로 축소하고, fit.
+```
+##### 차원축소(PCA)를 활용한 특성 중요도 평가
+```python
+pca = PCA(n_components=None).fit(Xstd_train)  # Standard Scaling한 데이터 넣음
+  
+특성변량기여도 = pca.explained_variance_ratio_
+특성변량기여도 = Series(
+    특성변량기여도, index=cancer.columns[1:])
+특성변량기여도.sort_values().plot(kind='barh')
 ```
 #### encoding(인코딩)
 ##### one-hot encoding
-안녕
+```python
+import pandas as pd
+
+pd.get_dummies(y)
+```
 #### pickle 사용법
 ##### 짠지담그기
 ```python
