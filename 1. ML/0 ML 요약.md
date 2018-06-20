@@ -179,6 +179,7 @@ Xmm_train, Xmm_test, y_train, y_test = train_test_split(Xmm, y, stratify=y)
 
 model = SVC(C=1000).fit(Xmm_train, y_train) # 이렇게 변환된 X로 학습 및 검증하면 된다.
 ```
+대체로 선형모델, 그를 기반으로 한 딥러닝 등이 Scale에 민감하므로 꼭 Scaling을 해주어야 한다.
 ##### 차원축소, 파이프라인
 ```python
 from sklearn.decomposition import PCA
