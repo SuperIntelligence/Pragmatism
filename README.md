@@ -10,24 +10,24 @@
 
 # 목차
 1. ML
- - (scikit-learn)
- - k-NN
- - Linear Model
- - Decision Tree
- - SVM
+  - (scikit-learn)
+  - k-NN
+  - Linear Model
+  - Decision Tree
+  - SVM
 2. DL
- - (tensorflow, keras)
- - 신경망
- - CNN
- - RNN
+  - (tensorflow, keras)
+  - 신경망
+  - CNN
+  - RNN
 3. RL + GAN
- - (tensorflow)
- - 머신러닝, 딥러닝 복습
- - DQN
- - GAN
- - DCGAN
- - LSTM-GAN
- - AnoGAN
+  - (tensorflow)
+  - 머신러닝, 딥러닝 복습
+  - DQN
+  - GAN
+  - DCGAN
+  - LSTM-GAN
+  - AnoGAN
 4. Open Sources
- - Tensorflow Examples
- - Magenta
+  - Tensorflow Examples
+  - Magenta
