@@ -14,4 +14,8 @@
 * LSTM-GAN
 * AnoGAN
 
-# 
+# 교재
+자체교재 사용
+
+# 참고
+http://ishuca.tistory.com/category/%EA%B0%95%ED%99%94%ED%95%99%EC%8A%B5 : 수업때 썼던 예제와 개념 상당수 포함, 원문봐도 좋을듯
