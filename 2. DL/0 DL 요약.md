@@ -237,9 +237,33 @@ for layer in [layer1, layer2, layer3]:
 y_pred = np.argmax(model.predict(X_test), axis=1)
 np.mean(y_pred == y_test)
 ```
-
-안녕
-
+우린 FeedFowardNet class에 fit과 copute_loss도 만들어야함
+```python
+    def compute_loss(self, X, y):
+        y_pred = self.predict(X)
+        return self.loss_func(y_pred, y)
+    
+    def fit(self, X, Y, batch_size):
+        loss_history = []
+        for i in range(self.epoch):
+            print('Epoch ', i+1)
+            # 미니배치
+            batch_indice = np.random.choice(len(X), batch_size)
+            X_batch = X[batch_indice]
+            Y_batch = Y[batch_indice]
+            # 최적화
+            for layer in self.layers:
+                params = layer.get_params()
+                # 경사하강법
+                목표함수 = lambda params: self.compute_loss(
+                    X_batch, y_batch)
+                dW = numerical_gradient_batch(목표함수, params)
+                params -= dW * self.학습률
+            loss = self.compute_loss(X, y)
+            loss_history.append(loss)
+        return loss_history
+```
+근데 잘 작동안함 ㅋ 뭐하자는건지! 스스로 해결해보실?
 ## 4일차
 ### Tensorflow
 케라스가 짱이니 케라스를 쓰겠습니다.
@@ -438,9 +462,56 @@ history = model.fit(
 RNN은 1991년에 나왔고, 시계열 데이터나 음성처럼 시간의 흐름에 따른 예측에 좋아요!
 ### 구현 (airline 고객 데이터 대상)
 ```python
-airline = pd.read_csv('data/international-airline-passengers.csv')
+airline = pd.read_csv('data/international-airline-passengers.csv')  # 데이터 보시고
+airline = airline.set_index('Month')  # 정리해줘야겠죠?
+airline = airline.dropna()            # 없는 값 (NaN) 제거해야겠죠?
 
-shampoo = pd.read_csv('data/shampoo.csv')   # 나중에 이 두개로도 해보시라고..
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+data = scaler.fit_transform(airline)  # 전처리(MinMaxScaling) 필요합니다잉
+
+X = data[:-1]
+y = data[1:]
+len(X) == len(y)  # 우리는 예측을 할거라서요 이렇게 하나차이나게, 길이는 같게해줘야함!
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, shuffle=False)  # 맨날 하던 split인데 시계열 데이터니까 섞진말고!
+X = X.reshape(-1, 1, 1)   # X의 형상은 (samples, time steps, features)
+```
+이제 대망의 모델 만들기
+```python
+from keras.layers import LSTM
+
+model = Sequential()
+model.add(LSTM(4, input_shape=(1, 1)))
+model.add(Dense(1))
+
+model.compile(loss='mean_squared_error', optimizer='adam')
+history = model.fit(X_train, y_train, epochs=100, batch_size=1)
+
+y_pred_train = model.predict(X_train)
+y_pred_test = model.predict(X_test)
+
+from sklearn.metrics import r2_score
+train_score = r2_score(y_train.flatten(), y_pred_train.flatten())
+test_score = r2_score(y_test.flatten(), y_pred_test.flatten())
+train_score, test_score   # 처참하네요? 그래도 눈으로 확인해보면 그정돈아님
+
+xs_train = np.arange(len(X_train))
+xs_test = np.arange(len(X_train), len(X))
+plt.plot(scaler.inverse_transform(y))
+plt.plot(xs_train, scaler.inverse_transform(y_pred_train))
+plt.plot(xs_test, scaler.inverse_transform(y_pred_test))    # 그쵸?
+```
+나중에 심심하면 아래것들도 해보세요
+```python
+shampoo = pd.read_csv('data/shampoo.csv')
 stocks = pd.read_csv('data/stock_px.csv')
+pollution = pd.read_csv(
+    'data/uci-ml/beijing-pm25.csv',
+    index_col=0, 
+    parse_dates=[['year', 'month', 'day', 'hour']]
+)
 ```
 끝.
