@@ -263,6 +263,7 @@ np.mean(y_pred == y_test)
             loss_history.append(loss)
         return loss_history
 ```
+최종본은 [이건](./neuralnet.py)데... 
 근데 잘 작동안함 ㅋ 뭐하자는건지! 스스로 해결해보실?<p />
 이용은 이렇게 (MNIST 데이터)
 ```python
