@@ -263,7 +263,18 @@ np.mean(y_pred == y_test)
             loss_history.append(loss)
         return loss_history
 ```
-근데 잘 작동안함 ㅋ 뭐하자는건지! 스스로 해결해보실?
+근데 잘 작동안함 ㅋ 뭐하자는건지! 스스로 해결해보실?<p />
+이용은 이렇게 (MNIST 데이터)
+```python
+model = FeedForwardNet(
+    학습률=0.1, 학습횟수=10, 손실함수=cross_entropy)
+model.add(Layer(784, 50, sigmoid))
+model.add(Layer(50, 100, sigmoid))
+model.add(Layer(100, 10, softmax))
+
+Y_train = pd.get_dummies(y_train).values.astype('float32')
+loss_history = model.fit(X_train, Y_train, batch_size=100)
+```
 ## 4일차
 ### Tensorflow
 케라스가 짱이니 케라스를 쓰겠습니다.
