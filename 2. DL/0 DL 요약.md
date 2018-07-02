@@ -242,13 +242,205 @@ np.mean(y_pred == y_test)
 
 ## 4일차
 ### Tensorflow
-### Keras
 케라스가 짱이니 케라스를 쓰겠습니다.
+### Keras
+설치는 Anaconda Prompt에서 conda install keras하면됨.
+```python
+import keras
+from keras.models import Sequential
+from keras.layers.core import Dense
+
+model = Sequential()
+
+model.add(Dense(50, input_shape=(784,), activation='sigmoid'))
+model.add(Dense(100, activation='sigmoid'))
+model.add(Dense(10, activation='softmax'))
+
+from keras.optimizers import SGD
+
+model.compile(
+    loss='categorical_crossentropy', optimizer=SGD(lr=0.1),
+    metrics=['accuracy']
+)
+model.summary()   # 모델 요약한거 보기
+
+history = model.fit(
+    X_train, Y_train, batch_size=128, epochs=200,
+    validation_split=0.2
+)                 # fit!
+```
+훈련 결과 평가 및 적용
+```python
+훈련결과 = pd.DataFrame(history.history)
+훈련결과[['loss', 'val_loss']].plot()
+
+score = model.evaluate(X_test, Y_test)
+print('Loss: {0}, Acc.: {1}'.format(*score))  # 0.94정도 나옵니다
+
+Y_pred = model.predict(X_test)
+y_pred = np.argmax(Y_pred, axis=1)  # 젤 높은 값으로 추정숫자 선택
+```
 ### 합성곱 신경망(CNN)
-  - 구현과 활용
+#### 구현 (MNIST 대상)
+```python
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.layers.core import Activation, Flatten
+
+# 좀더 간결하게 코딩하는 꿀팁
+model = Sequential([
+  # 1층
+  Conv2D(20, input_shape=(28, 28, 1), kernel_size=5, padding='same', activation='relu'),
+  MaxPooling2D(pool_size=(2,2), strides=(2,2)),
+  # 2층
+  Conv2D(50, kernel_size=5, padding='same', activation='relu'),
+  MaxPooling2D(pool_size=(2,2)),
+  # 3층 (출력 준비층)
+  Flatten(),
+  Dense(500, activation='relu'),
+  # 출력층
+  Dense(10, activation='softmax')
+])
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+X_train = X_train.reshape(-1, 28, 28, 1)    # CNN은 이미지같은 행렬형태의 데이터에 적합
+X_test = X_test.reshape(-1, 28, 28, 1)
+
+history = model.fit(X_train, Y_train, 
+                    batch_size=128, epochs=20, 
+                    validation_split=0.2)
+```
+#### 구현 (cifar10 대상)
+우선 cifar10데이터 가져와서 전처리하는거
+```python
+from deepy.dataset import cifar10
+(X_train, y_train), (X_test, y_test) = cifar10.load('data/keras/cifar-10-batches-py/')
+
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+X_train /= 255
+X_test /= 255
+
+Y_train = pd.get_dummies(y_train).values.astype('float32')
+from keras.utils import np_utils
+Y_test = np_utils.to_categorical(y_test)
+```
+다음은 모델(conv2d + conv2d + MaxPooling + dense + dense), Dropout도 들어감
+```python
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.layers.core import Activation, Flatten, Dropout
+
+model = Sequential([
+  # 1층
+  Conv2D(32, kernel_size=3, padding='same', input_shape=(32, 32, 3), activation='relu'),
+  Conv2D(32, kernel_size=3, padding='same', activation='relu'),
+  MaxPooling2D(pool_size=(2,2)),
+  Dropout(0.25),
+  # 2층
+  Conv2D(64, kernel_size=3, padding='same', activation='relu'),
+  Conv2D(64, kernel_size=3, padding='same', activation='relu'),
+  MaxPooling2D(pool_size=(2,2)),
+  Dropout(0.25),
+  # 3층 (출력 준비층)
+  Flatten(),
+  Dense(512, activation='relu'),
+  Dropout(0.5),
+  # 출력층
+  Dense(10, activation='softmax')
+])
+
+model.summary()
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+X_train.shape, Y_train.shape    # 이미 잘 되어있죠?
+
+history = model.fit(X_train, Y_train, 
+                    batch_size=100, epochs=20, 
+                    validation_split=0.2)
+```
 ## 5일차
-### Keras 고급 활용
-### 이미지 최신모델 활용
+### Keras 고급 활용 (이미지 최신모델 활용)
 VGG16같은거 keras자체에서 모델 제공됨. import해서 사용가능
+#### VGG16
+```python
+from keras.applications.vgg16 import VGG16
+from keras.applications.vgg16 import preprocess_input
+
+vgg16 = VGG16(weights=None)
+vgg16.summary()
+
+vgg16.load_weights('data/keras/vgg16_weights_tf_dim_ordering_tf_kernels.h5') 
+# 굳이파일로 안해도(파라미터전달안하면) 걍 웹에서 다운가능
+```
+다음은 모찌(개이름)로 실제 추론을 해볼건데요
+```python
+from keras.preprocessing import image
+
+img = image.load_img('data/mozzi.jpg', target_size=(224, 224))
+x = image.img_to_array(img)
+X = np.array([x])
+X = preprocess_input(X)
+
+Y_pred = vgg16.predict(X)
+y_pred = np.argmax(Y_pred, axis=1)
+array([644], dtype=int64)   # 결과로 644가 나왔으니 확인해볼까요! 무려 품종까지 detect!
+```
+#### 논문에 소개된 모델 설명만 가지고 구현하기
+여기보시면 cifar-10 accuracy 랭크가 있어요
+(http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#43494641522d3130)
+지금 2등하고있는 친구 논문을 보면 모델이 나와있죠 우린 C로 한번 만들어보죠
+(https://arxiv.org/pdf/1412.6806.pdf)
+```python
+from keras.models import Sequential
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.layers.core import Dense, Flatten
+from keras.layers.pooling import AveragePooling2D
+
+model = Sequential()
+
+model.add(Conv2D(96, kernel_size=(3,3), padding='same',                   
+                 activation='relu', input_shape=(32,32,3)))
+model.add(Conv2D(96, kernel_size=(3,3), padding='same', 
+                 activation='relu'))
+#model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
+model.add(Conv2D(96, kernel_size=(3,3), padding='same',
+                 strides=(2,2),
+                 activation='relu'))
+
+model.add(Conv2D(192, kernel_size=(3,3), padding='same',                   
+                 activation='relu'))
+model.add(Conv2D(192, kernel_size=(3,3), padding='same', 
+                 activation='relu'))
+#model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
+model.add(Conv2D(192, kernel_size=(3,3), padding='same',
+                 strides=(2,2),
+                 activation='relu'))
+
+model.add(Conv2D(192, kernel_size=(3,3), padding='same',                   
+                 activation='relu'))
+model.add(Conv2D(192, kernel_size=(1,1), padding='same',                   
+                 activation='relu'))
+model.add(Conv2D(10, kernel_size=(1,1), padding='same', 
+                 activation='relu'))
+
+model.add(AveragePooling2D(pool_size=(6,6)))
+model.add(Flatten())
+model.add(Dense(10, activation='softmax'))
+
+model.summary()
+model.compile(loss='categorical_crossentropy', 
+              optimizer='adam', metrics=['accuracy'])
+history = model.fit(
+    X_train, Y_train, batch_size=100, epochs=20, 
+    validation_split=0.2)
+```
 ### 재귀 신경망(RNN)
-  - 구현과 활용
+RNN은 1991년에 나왔고, 시계열 데이터나 음성처럼 시간의 흐름에 따른 예측에 좋아요!
+### 구현 (airline 고객 데이터 대상)
+```python
+airline = pd.read_csv('data/international-airline-passengers.csv')
+
+shampoo = pd.read_csv('data/shampoo.csv')   # 나중에 이 두개로도 해보시라고..
+stocks = pd.read_csv('data/stock_px.csv')
+```
+끝.
